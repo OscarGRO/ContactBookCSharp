@@ -1,5 +1,7 @@
 namespace ContactBook;
 
+using static ContactComparer;
+
 public class ContactBook
 {   
     public const string NEXT_PAGE = "N";
@@ -494,7 +496,7 @@ public class ContactBook
 
     private void FindContacts() 
     { 
-        Console.Write("Ingrese el termino de busqueda (dejar en blanco si desea ver todos): ");
+        Console.Write("Ingrese el termino de busqueda (dejar en blanco si desea verlos todos): ");
         string term = Console.ReadLine()?.Trim().ToLower() ?? "";
         
         if (string.IsNullOrEmpty(term))
@@ -530,8 +532,42 @@ public class ContactBook
 
     private void OrderContacts() 
     { 
-        Console.WriteLine("Ordenar Contactos"); 
+        TipoOrden[] sortTypes = new TipoOrden[]
+        {
+            TipoOrden.Nombre, TipoOrden.Apellido, TipoOrden.Telefono, TipoOrden.Email
+        };
+
+        // Llama a GetInt con la logica de repintado de contactos
+        int index = GetInt("Ordenar contactos por [0] Nombre [1] Apellido [2] Telefono [3] Email [0-3]", 0, 3);
+
+        ContactComparer ccp = new ContactComparer(sortTypes[index]);
+        
+        allContacts.Sort(ccp);
+        filteredContacts.Sort(ccp);
+
+        Console.WriteLine("\nContactos ordenados exitosamente.");
         PressEnterContinue();
+    }
+
+    private int GetInt(string prompt, int min, int max)
+    {
+        int result;
+        while (true)
+        {
+            Console.Write($"{prompt} ");
+            if (int.TryParse(Console.ReadLine(), out result) && result >= min && result <= max)
+            {
+                return result;
+            }
+            
+            // Si hay error, avisamos al usuario y esperamos confirmacion
+            Console.WriteLine($"\nERROR: Debe ingresar un numero entre {min} y {max}.");
+            PressEnterContinue();
+
+            // Limpiamos y VOLVEMOS a dibujar los contactos para que no se pierdan
+            Console.Clear();
+            ShowContacts(); 
+        }
     }
 
     private void DeduplicateContacts() 
