@@ -1,4 +1,5 @@
 namespace ContactBook;
+
 public class ContactBook
 {   
     public const string NEXT_PAGE = "N";
@@ -119,13 +120,13 @@ public class ContactBook
 
     private void ShowInputOptions()
     {
-        Console.WriteLine(string.Format("[{0}] Next Page      | [{1}] Create Contact | [{2}] Delete Contact  | [{3}] Deduplicate Contacts", 
+        Console.WriteLine(string.Format("[{0}] Pagina Siguiente | [{1}] Crear Contacto      | [{2}] Eliminar Contacto | [{3}] Eliminar Duplicados", 
             NEXT_PAGE, CREATE_CONTACT, DELETE_CONTACT, DEDUPLICATE_CONTACTS));
         
-        Console.WriteLine(string.Format("[{0}] Prev Page      | [{1}] Review Contact | [{2}] Find Contacts    | [{3}] Change Page Size", 
+        Console.WriteLine(string.Format("[{0}] Pagina Anterior  | [{1}] Revisar Contacto    | [{2}] Buscar Contactos  | [{3}] Tamano de Pagina", 
             PREV_PAGE, REVIEW_CONTACT, FIND_CONTACTS, PAGE_SIZE));
         
-        Console.WriteLine(string.Format("[{0}] Goto Page      | [{1}] Update Contact | [{2}] Order Contacts   | [{3}] Exit", 
+        Console.WriteLine(string.Format("[{0}] Ir a Pagina      | [{1}] Actualizar Contacto | [{2}] Ordenar Contactos | [{3}] Salir", 
             GOTO_PAGE, UPDATE_CONTACT, ORDER_CONTACTS, EXIT));
 
         Console.WriteLine();
@@ -138,17 +139,21 @@ public class ContactBook
 
     private void ProcessInput(string input)
     {
-        int n = allContacts.Count;
-        int pageCount = (int)Math.Max(1, Math.Ceiling(n / (double)pageSize));
-
         switch (input)
         {
-            case NEXT_PAGE:
-                if (currentPage < pageCount) currentPage++;
-                break;
-            case PREV_PAGE:
-                if (currentPage > 1) currentPage--;
-                break;
+            case NEXT_PAGE: NextPage(); break;
+            case PREV_PAGE: PrePage(); break;
+            case GOTO_PAGE: GotoPage(); break;
+            case PAGE_SIZE: PageSize(); break;
+            case CREATE_CONTACT: CreateContact(); break;
+            case REVIEW_CONTACT: ReviewContact(); break;
+            case UPDATE_CONTACT: UpdateContact(); break;
+            case DELETE_CONTACT: DeleteContact(); break;
+            case FIND_CONTACTS: FindContacts(); break;
+            case ORDER_CONTACTS: OrderContacts(); break;
+            case DEDUPLICATE_CONTACTS: DeduplicateContacts(); break;
+            case EXIT: Exit(); break;
+            default: break;
         }
     }
 
@@ -164,5 +169,76 @@ public class ContactBook
     {
         Console.WriteLine("\nPresione ENTER para continuar.");
         while (Console.ReadKey(true).Key != ConsoleKey.Enter);
+    }
+
+    private void NextPage() 
+    { 
+        Console.WriteLine("Pagina Siguiente"); 
+        PressEnterContinue();
+    }
+
+    private void PrePage() 
+    { 
+        Console.WriteLine("Pagina Anterior"); 
+        PressEnterContinue();
+    }
+
+    private void GotoPage() 
+    { 
+        Console.WriteLine("Ir a Pagina"); 
+        PressEnterContinue();
+    }
+
+    private void PageSize() 
+    { 
+        Console.WriteLine("Tamano de Pagina"); 
+        PressEnterContinue();
+    }
+
+    private void CreateContact() 
+    { 
+        Console.WriteLine("Crear Contacto"); 
+        PressEnterContinue();
+    }
+
+    private void ReviewContact() 
+    { 
+        Console.WriteLine("Revisar Contacto"); 
+        PressEnterContinue();
+    }
+
+    private void UpdateContact() 
+    { 
+        Console.WriteLine("Actualizar Contacto"); 
+        PressEnterContinue();
+    }
+
+    private void DeleteContact() 
+    { 
+        Console.WriteLine("Eliminar Contacto"); 
+        PressEnterContinue();
+    }
+
+    private void FindContacts() 
+    { 
+        Console.WriteLine("Buscar Contactos"); 
+        PressEnterContinue();
+    }
+
+    private void OrderContacts() 
+    { 
+        Console.WriteLine("Ordenar Contactos"); 
+        PressEnterContinue();
+    }
+
+    private void DeduplicateContacts() 
+    { 
+        Console.WriteLine("Eliminar Contactos Duplicados"); 
+        PressEnterContinue();
+    }
+
+    private void Exit() 
+    { 
+        Console.WriteLine("Salir"); 
     }
 }
