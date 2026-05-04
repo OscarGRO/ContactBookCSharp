@@ -59,7 +59,24 @@ public class ContactBook
 
             } while (isInvalid);
 
-            ProcessInput(input);
+            if (input == EXIT)
+            {
+                Console.Write("\nEstas seguro de que quieres salir? (Y/N): ");
+                string confirm = Console.ReadLine()?.ToUpper() ?? "";
+                
+                if (confirm == "Y")
+                {
+                    ProcessInput(input);
+                }
+                else
+                {
+                    input = ""; // Reiniciamos el input para que no salga del loop
+                }
+            }
+            else
+            {
+                ProcessInput(input);
+            }
 
         } while (input != EXIT);
 
@@ -160,9 +177,9 @@ public class ContactBook
     private void ShowExitScreen()
     {
         Console.Clear();
-        Console.WriteLine("======================================");
-        Console.WriteLine("  Gracias por usar la Agenda de Oscar ");
-        Console.WriteLine("======================================");
+        Console.WriteLine("===========================================");
+        Console.WriteLine("  Gracias por usar el ContactBook de Oscar! ");
+        Console.WriteLine("===========================================");
     }
 
     private void PressEnterContinue()
