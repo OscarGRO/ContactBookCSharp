@@ -200,8 +200,19 @@ public class ContactBook
 
     private void GotoPage() 
     { 
-        Console.WriteLine("Ir a Pagina"); 
-        PressEnterContinue();
+        int pageCount = (int)Math.Max(1, Math.Ceiling(allContacts.Count / (double)pageSize));
+        Console.Write($"Ingrese el numero de pagina (1-{pageCount}): ");
+        string input = Console.ReadLine() ?? "";
+
+        if (int.TryParse(input, out int targetPage) && targetPage >= 1 && targetPage <= pageCount)
+        {
+            currentPage = targetPage;
+        }
+        else
+        {
+            Console.WriteLine("ERROR: Input invalido. Por favor, intentelo de nuevo.");
+            PressEnterContinue();
+        }
     }
 
     private void PageSize() 
