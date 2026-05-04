@@ -70,7 +70,7 @@ public class ContactBook
                 }
                 else
                 {
-                    input = ""; // Reiniciamos el input para que no salga del loop
+                    input = ""; 
                 }
             }
             else
@@ -99,39 +99,38 @@ public class ContactBook
         Console.WriteLine("  Lista de Contactos: ");
         Console.WriteLine("================================================================================================");
 
-        if (allContacts.Count <= 0)
+        int indexCol = -Math.Max("#".Length, allContacts.Count.ToString().Length);
+        int fnameCol = -Math.Max("Nombre".Length, allContacts.Any() ? allContacts.Max(c => c.Nombre?.Length ?? 0) : 0);
+        int lnameCol = -Math.Max("Apellido".Length, allContacts.Any() ? allContacts.Max(c => c.Apellido?.Length ?? 0) : 0);
+        int phoneCol = -Math.Max("Telefono".Length, allContacts.Any() ? allContacts.Max(c => c.Telefono?.Length ?? 0) : 0);
+        int emailCol = -Math.Max("Email".Length, allContacts.Any() ? allContacts.Max(c => c.Email?.Length ?? 0) : 0);
+
+        string format = $" {{0,{indexCol}}} | {{1,{fnameCol}}} | {{2,{lnameCol}}} | {{3,{phoneCol}}} | {{4,{emailCol}}}";
+
+        Console.WriteLine(format, "#", "Nombre", "Apellido", "Telefono", "Email");
+        Console.WriteLine(new string('-', Math.Abs(indexCol + fnameCol + lnameCol + phoneCol + emailCol) + 15));
+
+        int n = allContacts.Count;
+        int pageCount = (int)Math.Max(1, Math.Ceiling(n / (double)pageSize));
+        currentPage = Math.Clamp(currentPage, 1, pageCount);
+
+        int s = (currentPage - 1) * pageSize;
+        int e = Math.Min(s + pageSize, n);
+
+        for (int i = s; i < e; i++)
         {
-            Console.WriteLine(" No se encontraron contactos.");
+            Contact c = allContacts[i];
+            Console.WriteLine(format, i + 1, c.Nombre, c.Apellido, c.Telefono, c.Email);
         }
-        else
+
+        int renderedLines = e - s;
+        for (int i = renderedLines; i < pageSize; i++)
         {
-            int indexCol = -Math.Max("#".Length, allContacts.Count.ToString().Length);
-            int fnameCol = -Math.Max("Nombre".Length, allContacts.Max(c => c.Nombre?.Length ?? 0));
-            int lnameCol = -Math.Max("Apellido".Length, allContacts.Max(c => c.Apellido?.Length ?? 0));
-            int phoneCol = -Math.Max("Telefono".Length, allContacts.Max(c => c.Telefono?.Length ?? 0));
-            int emailCol = -Math.Max("Email".Length, allContacts.Max(c => c.Email?.Length ?? 0));
-
-            string format = $" {{0,{indexCol}}} | {{1,{fnameCol}}} | {{2,{lnameCol}}} | {{3,{phoneCol}}} | {{4,{emailCol}}}";
-
-            Console.WriteLine(format, "#", "Nombre", "Apellido", "Telefono", "Email");
-            Console.WriteLine(new string('-', Math.Abs(indexCol + fnameCol + lnameCol + phoneCol + emailCol) + 15));
-
-            int n = allContacts.Count;
-            int pageCount = (int)Math.Max(1, Math.Ceiling(n / (double)pageSize));
-            currentPage = Math.Clamp(currentPage, 1, pageCount);
-
-            int s = (currentPage - 1) * pageSize;
-            int e = Math.Min(s + pageSize, n);
-
-            for (int i = s; i < e; i++)
-            {
-                Contact c = allContacts[i];
-                Console.WriteLine(format, i + 1, c.Nombre, c.Apellido, c.Telefono, c.Email);
-            }
-
-            Console.WriteLine();
-            Console.WriteLine($" Pagina {currentPage} de {pageCount} ({s + 1}-{e} de {n})");
+            Console.WriteLine(format, "", "", "", "", "");
         }
+
+        Console.WriteLine();
+        Console.WriteLine($" Pagina {currentPage} de {pageCount} ({ (n > 0 ? s + 1 : 0) }-{e} de {n})");
         Console.WriteLine("================================================================================================");
     }
 
@@ -159,7 +158,7 @@ public class ContactBook
         switch (input)
         {
             case NEXT_PAGE: NextPage(); break;
-            case PREV_PAGE: PrePage(); break;
+            case PREV_PAGE: PrevPage(); break;
             case GOTO_PAGE: GotoPage(); break;
             case PAGE_SIZE: PageSize(); break;
             case CREATE_CONTACT: CreateContact(); break;
@@ -190,14 +189,13 @@ public class ContactBook
 
     private void NextPage() 
     { 
-        Console.WriteLine("Pagina Siguiente"); 
-        PressEnterContinue();
+        int pageCount = (int)Math.Max(1, Math.Ceiling(allContacts.Count / (double)pageSize));
+        if (currentPage < pageCount) currentPage++;
     }
 
-    private void PrePage() 
+    private void PrevPage() 
     { 
-        Console.WriteLine("Pagina Anterior"); 
-        PressEnterContinue();
+        if (currentPage > 1) currentPage--;
     }
 
     private void GotoPage() 
