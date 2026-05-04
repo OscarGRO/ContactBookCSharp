@@ -229,7 +229,6 @@ public class ContactBook
         {
             size = newSize;
             
-            // Recalcular si la pagina actual sigue siendo valida con el nuevo tamaño
             int pageCount = (int)Math.Max(1, Math.Ceiling(allContacts.Count / (double)size));
             if (currentPage > pageCount)
             {
@@ -245,7 +244,37 @@ public class ContactBook
 
     private void CreateContact() 
     { 
-        Console.WriteLine("Crear Contacto"); 
+        Console.Clear();
+        Console.WriteLine("======================================");
+        Console.WriteLine("          Crear Nuevo Contacto        ");
+        Console.WriteLine("======================================");
+
+        Console.Write("Ingrese el nombre: ");
+        string nombre = Console.ReadLine() ?? "";
+
+        Console.Write("Ingrese el apellido: ");
+        string apellido = Console.ReadLine() ?? "";
+
+        Console.Write("Ingrese el telefono: ");
+        string telefono = Console.ReadLine() ?? "";
+
+        Console.Write("Ingrese el email: ");
+        string email = Console.ReadLine() ?? "";
+
+        Contact nuevoContacto = new Contact
+        {
+            Nombre = nombre,
+            Apellido = apellido,
+            Telefono = telefono,
+            Email = email
+        };
+
+        allContacts.Add(nuevoContacto);
+
+        int pageCount = (int)Math.Max(1, Math.Ceiling(allContacts.Count / (double)pageSize));
+        currentPage = pageCount;
+
+        Console.WriteLine("\nContacto creado exitosamente."); 
         PressEnterContinue();
     }
 

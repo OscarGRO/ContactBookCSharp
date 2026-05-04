@@ -14,11 +14,30 @@ namespace ContactBook
             this.telefono = telefono;
             this.email = email;
         }
+        
+        public string Nombre 
+        { 
+            get => nombre; 
+            set => nombre = value; 
+        }
 
-        public string Nombre => nombre;
-        public string Apellido => apellido;
-        public string Telefono => telefono;
-        public string Email => email;
+        public string Apellido 
+        { 
+            get => apellido; 
+            set => apellido = value; 
+        }
+
+        public string Telefono 
+        { 
+            get => telefono; 
+            set => telefono = value; 
+        }
+
+        public string Email 
+        { 
+            get => email; 
+            set => email = value; 
+        }
 
         public override string ToString() => $"{nombre} {apellido} | Tel: {telefono} | Email: {email}";
 
