@@ -78,9 +78,9 @@ public class ContactBook
     private void ShowContacts()
     {
         Console.Clear();
-        Console.WriteLine("============================================================================");
+        Console.WriteLine("================================================================================================");
         Console.WriteLine("  Lista de Contactos: ");
-        Console.WriteLine("============================================================================");
+        Console.WriteLine("================================================================================================");
 
         if (allContacts.Count <= 0)
         {
@@ -115,7 +115,7 @@ public class ContactBook
             Console.WriteLine();
             Console.WriteLine($" Pagina {currentPage} de {pageCount} ({s + 1}-{e} de {n})");
         }
-        Console.WriteLine("============================================================================");
+        Console.WriteLine("================================================================================================");
     }
 
     private void ShowInputOptions()
@@ -123,7 +123,7 @@ public class ContactBook
         Console.WriteLine(string.Format("[{0}] Pagina Siguiente | [{1}] Crear Contacto      | [{2}] Eliminar Contacto | [{3}] Eliminar Duplicados", 
             NEXT_PAGE, CREATE_CONTACT, DELETE_CONTACT, DEDUPLICATE_CONTACTS));
         
-        Console.WriteLine(string.Format("[{0}] Pagina Anterior  | [{1}] Revisar Contacto    | [{2}] Buscar Contactos  | [{3}] Tamano de Pagina", 
+        Console.WriteLine(string.Format("[{0}] Pagina Anterior  | [{1}] Revisar Contacto    | [{2}] Buscar Contactos  | [{3}] Tamaño de Pagina", 
             PREV_PAGE, REVIEW_CONTACT, FIND_CONTACTS, PAGE_SIZE));
         
         Console.WriteLine(string.Format("[{0}] Ir a Pagina      | [{1}] Actualizar Contacto | [{2}] Ordenar Contactos | [{3}] Salir", 
@@ -191,7 +191,7 @@ public class ContactBook
 
     private void PageSize() 
     { 
-        Console.WriteLine("Tamano de Pagina"); 
+        Console.WriteLine("Tamaño de Pagina"); 
         PressEnterContinue();
     }
 
