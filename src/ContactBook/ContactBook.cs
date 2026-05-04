@@ -301,13 +301,16 @@ public class ContactBook
         bool validIndexChosen = false;
         while (!validIndexChosen)
         {
-            // Pedimos el número directamente después del menú que ya mostró Start()
             Console.Write($"Ingrese el numero del contacto (1-{allContacts.Count}): ");
             string input = Console.ReadLine() ?? "";
 
             if (int.TryParse(input, out int index) && index >= 1 && index <= allContacts.Count)
             {
                 Console.Clear();
+                Console.WriteLine("=================================================================================");
+                Console.WriteLine("Revisando Contacto");
+                Console.WriteLine("=================================================================================");
+                Console.WriteLine();
                 ReviewContact(index - 1);
                 PressEnterContinue();
                 validIndexChosen = true;
@@ -316,9 +319,6 @@ public class ContactBook
             {
                 Console.WriteLine("ERROR: Numero de contacto invalido.");
                 PressEnterContinue();
-                
-                // Aquí está el truco: limpiamos la pantalla y redibujamos todo 
-                // para que parezca que solo se actualiza la pregunta sin duplicar texto.
                 ShowContacts();
                 ShowInputOptions();
             }
@@ -328,24 +328,101 @@ public class ContactBook
     private void ReviewContact(int index)
     {
         Contact c = allContacts[index];
-
-        Console.WriteLine(new string('-', 80));
-        Console.WriteLine("Revisar Contacto");
-        Console.WriteLine(new string('-', 80));
-        Console.WriteLine();
-
-        Console.WriteLine($" Nombre:   {c.Nombre}");
+        Console.WriteLine($" Nombre: {c.Nombre}");
         Console.WriteLine($" Apellido: {c.Apellido}");
         Console.WriteLine($" Telefono: {c.Telefono}");
-        Console.WriteLine($" Email:    {c.Email}");
-        
+        Console.WriteLine($" Email: {c.Email}");
         Console.WriteLine();
     }
 
     private void UpdateContact() 
     { 
-        Console.WriteLine("Actualizar Contacto"); 
-        PressEnterContinue();
+        if (allContacts.Count == 0)
+        {
+            Console.WriteLine("No hay contactos para actualizar.");
+            PressEnterContinue();
+            return;
+        }
+
+        bool validIndexChosen = false;
+        while (!validIndexChosen)
+        {
+            Console.Write($"Ingrese el numero del contacto que desea actualizar (1-{allContacts.Count}): ");
+            string indexInput = Console.ReadLine() ?? "";
+
+            if (int.TryParse(indexInput, out int index) && index >= 1 && index <= allContacts.Count)
+            {
+                Console.Clear();
+                int actualIndex = index - 1;
+                Contact c = allContacts[actualIndex];
+
+                Console.WriteLine("=================================================================================");
+                Console.WriteLine("Actualizar Contacto");
+                Console.WriteLine("=================================================================================");
+                Console.WriteLine();
+
+                ReviewContact(actualIndex);
+
+                string newNombre = c.Nombre!;
+                string newApellido = c.Apellido!;
+                string newTelefono = c.Telefono!;
+                string newEmail = c.Email!;
+
+                if (AskToEdit("el nombre"))
+                {
+                    Console.Write("Ingrese el nombre: ");
+                    newNombre = Console.ReadLine() ?? newNombre;
+                }
+
+                if (AskToEdit("el apellido"))
+                {
+                    Console.Write("Ingrese el apellido: ");
+                    newApellido = Console.ReadLine() ?? newApellido;
+                }
+
+                if (AskToEdit("el telefono"))
+                {
+                    Console.Write("Ingrese el telefono: ");
+                    newTelefono = Console.ReadLine() ?? newTelefono;
+                }
+
+                if (AskToEdit("el email"))
+                {
+                    Console.Write("Ingrese el email: ");
+                    newEmail = Console.ReadLine() ?? newEmail;
+                }
+
+                Console.Write($"¿Desea actualizar este contacto? [Y/N] ");
+                if ((Console.ReadLine()?.ToUpper() ?? "Y") == "Y")
+                {
+                    c.Nombre = newNombre;
+                    c.Apellido = newApellido;
+                    c.Telefono = newTelefono;
+                    c.Email = newEmail;
+                    Console.WriteLine("\nOperacion exitosa: Contacto actualizado.");
+                }
+                else
+                {
+                    Console.WriteLine("\nOperacion cancelada.");
+                }
+
+                PressEnterContinue();
+                validIndexChosen = true;
+            }
+            else
+            {
+                Console.WriteLine("ERROR: Numero de contacto invalido.");
+                PressEnterContinue();
+                ShowContacts();
+                ShowInputOptions();
+            }
+        }
+    }
+
+    private bool AskToEdit(string campo)
+    {
+        Console.Write($"¿Desea editar {campo}? [Y/N] ");
+        return (Console.ReadLine()?.ToUpper() ?? "N") == "Y";
     }
 
     private void DeleteContact() 
