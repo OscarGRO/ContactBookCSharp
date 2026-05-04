@@ -1,7 +1,7 @@
 namespace ContactBook;
-
 public class ContactBook
-{    public const string NEXT_PAGE = "N";
+{   
+    public const string NEXT_PAGE = "N";
     public const string PREV_PAGE = "P";
     public const string GOTO_PAGE = "G";
     public const string PAGE_SIZE = "S";
@@ -24,6 +24,8 @@ public class ContactBook
     };
 
     private List<Contact> allContacts;
+    private int currentPage = 1;
+    private int pageSize = 10;
 
     public ContactBook(List<Contact> contacts = null!)
     {
@@ -39,12 +41,22 @@ public class ContactBook
         {
             ShowContacts();
 
+            bool isInvalid;
             do
             {
                 ShowInputOptions();
                 input = GetInput();
-            } 
-            while (!IsValidInput(input));
+                
+                isInvalid = !IsValidInput(input) && input != EXIT;
+
+                if (isInvalid)
+                {
+                    Console.WriteLine("ERROR: Input invalido. Por favor, intentelo de nuevo.");
+                    PressEnterContinue();
+                    ShowContacts();
+                }
+
+            } while (isInvalid);
 
             ProcessInput(input);
 
@@ -84,33 +96,40 @@ public class ContactBook
             string format = $" {{0,{indexCol}}} | {{1,{fnameCol}}} | {{2,{lnameCol}}} | {{3,{phoneCol}}} | {{4,{emailCol}}}";
 
             Console.WriteLine(format, "#", "Nombre", "Apellido", "Telefono", "Email");
-            
             Console.WriteLine(new string('-', Math.Abs(indexCol + fnameCol + lnameCol + phoneCol + emailCol) + 15));
 
-
             int n = allContacts.Count;
-            int page = 1;
-            int size = 10;
-            int pageCount = (int) Math.Max(1, Math.Ceiling(n / (double) size));
-            int s = Math.Clamp((page - 1) * size, 0, n);
-            int e = Math.Clamp(s + size, 0, n);
+            int pageCount = (int)Math.Max(1, Math.Ceiling(n / (double)pageSize));
+            currentPage = Math.Clamp(currentPage, 1, pageCount);
+
+            int s = (currentPage - 1) * pageSize;
+            int e = Math.Min(s + pageSize, n);
+
             for (int i = s; i < e; i++)
             {
                 Contact c = allContacts[i];
-                
                 Console.WriteLine(format, i + 1, c.Nombre, c.Apellido, c.Telefono, c.Email);
             }
 
             Console.WriteLine();
-            Console.WriteLine($" Pagina {page} of {pageCount} ({s + 1}-{e} of {n})");
+            Console.WriteLine($" Pagina {currentPage} de {pageCount} ({s + 1}-{e} de {n})");
         }
         Console.WriteLine("============================================================================");
     }
 
     private void ShowInputOptions()
     {
-        Console.WriteLine("\nOpciones: [N] Siguiente, [P] Anterior, [C] Crear, [M] Fusionar, [X] Salir");
-        Console.Write("Seleccione una opcion: ");
+        Console.WriteLine(string.Format("[{0}] Next Page      | [{1}] Create Contact | [{2}] Delete Contact  | [{3}] Deduplicate Contacts", 
+            NEXT_PAGE, CREATE_CONTACT, DELETE_CONTACT, DEDUPLICATE_CONTACTS));
+        
+        Console.WriteLine(string.Format("[{0}] Prev Page      | [{1}] Review Contact | [{2}] Find Contacts    | [{3}] Change Page Size", 
+            PREV_PAGE, REVIEW_CONTACT, FIND_CONTACTS, PAGE_SIZE));
+        
+        Console.WriteLine(string.Format("[{0}] Goto Page      | [{1}] Update Contact | [{2}] Order Contacts   | [{3}] Exit", 
+            GOTO_PAGE, UPDATE_CONTACT, ORDER_CONTACTS, EXIT));
+
+        Console.WriteLine();
+        Console.Write("> ");
     }
 
     private string GetInput() => Console.ReadLine()?.ToUpper() ?? "";
@@ -119,7 +138,18 @@ public class ContactBook
 
     private void ProcessInput(string input)
     {
+        int n = allContacts.Count;
+        int pageCount = (int)Math.Max(1, Math.Ceiling(n / (double)pageSize));
 
+        switch (input)
+        {
+            case NEXT_PAGE:
+                if (currentPage < pageCount) currentPage++;
+                break;
+            case PREV_PAGE:
+                if (currentPage > 1) currentPage--;
+                break;
+        }
     }
 
     private void ShowExitScreen()
@@ -132,7 +162,7 @@ public class ContactBook
 
     private void PressEnterContinue()
     {
-        Console.Write("Presione ENTER para continuar.");
+        Console.WriteLine("\nPresione ENTER para continuar.");
         while (Console.ReadKey(true).Key != ConsoleKey.Enter);
     }
 }
