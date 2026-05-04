@@ -427,8 +427,76 @@ public class ContactBook
 
     private void DeleteContact() 
     { 
-        Console.WriteLine("Eliminar Contacto"); 
-        PressEnterContinue();
+        if (allContacts.Count == 0)
+        {
+            Console.WriteLine("No hay contactos para eliminar.");
+            PressEnterContinue();
+            return;
+        }
+
+        bool validIndexChosen = false;
+        while (!validIndexChosen)
+        {
+            Console.Write($"Ingrese el numero del contacto que desea eliminar (1-{allContacts.Count}): ");
+            string input = Console.ReadLine() ?? "";
+
+            if (int.TryParse(input, out int index) && index >= 1 && index <= allContacts.Count)
+            {
+                int actualIndex = index - 1;
+                Contact c = allContacts[actualIndex];
+
+                string confirm = "";
+                bool validConfirm = false;
+
+                while (!validConfirm)
+                {
+                    Console.Clear();
+                    Console.WriteLine("=================================================================================");
+                    Console.WriteLine("Eliminar Contacto");
+                    Console.WriteLine("=================================================================================");
+                    Console.WriteLine();
+
+                    Console.WriteLine($" Nombre: {c.Nombre}");
+                    Console.WriteLine($" Apellido: {c.Apellido}");
+                    Console.WriteLine($" Telefono: {c.Telefono}");
+                    Console.WriteLine($" Email: {c.Email}");
+                    Console.WriteLine();
+
+                    Console.Write("¿Desea eliminar este contacto? [Y/N] ");
+                    confirm = Console.ReadLine()?.ToUpper() ?? "";
+
+                    if (confirm == "Y" || confirm == "N")
+                    {
+                        validConfirm = true;
+                    }
+                    else
+                    {
+                        Console.WriteLine("\nERROR: Input invalido. Por favor entre 'Y' para si o 'N' para no.");
+                        PressEnterContinue(); 
+                    }
+                }
+
+                if (confirm == "Y")
+                {
+                    allContacts.RemoveAt(actualIndex);
+                    Console.WriteLine("\nOperacion exitosa: Contacto eliminado.");
+                }
+                else
+                {
+                    Console.WriteLine("\nOperacion cancelada.");
+                }
+
+                PressEnterContinue();
+                validIndexChosen = true;
+            }
+            else
+            {
+                Console.WriteLine("ERROR: Numero de contacto invalido.");
+                PressEnterContinue();
+                ShowContacts();
+                ShowInputOptions();
+            }
+        }
     }
 
     private void FindContacts() 
