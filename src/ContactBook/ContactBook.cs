@@ -215,10 +215,32 @@ public class ContactBook
         }
     }
 
-    private void PageSize() 
-    { 
-        Console.WriteLine("Tamaño de Pagina"); 
-        PressEnterContinue();
+    private void PageSize()
+    {
+        PageSize(ref pageSize);
+    }
+
+    private void PageSize(ref int size)
+    {
+        Console.Write("Entre el tamaño de pagina [1-20]: ");
+        string input = Console.ReadLine() ?? "";
+
+        if (int.TryParse(input, out int newSize) && newSize >= 1 && newSize <= 20)
+        {
+            size = newSize;
+            
+            // Recalcular si la pagina actual sigue siendo valida con el nuevo tamaño
+            int pageCount = (int)Math.Max(1, Math.Ceiling(allContacts.Count / (double)size));
+            if (currentPage > pageCount)
+            {
+                currentPage = 1;
+            }
+        }
+        else
+        {
+            Console.WriteLine("ERROR: Input invalido. Por favor, intentelo de nuevo.");
+            PressEnterContinue();
+        }
     }
 
     private void CreateContact() 
