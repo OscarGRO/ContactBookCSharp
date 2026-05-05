@@ -31,6 +31,7 @@ public class ContactBook
     private int currentPage = 1;
     private int pageSize = 10;
     private string lastSearchTerm = "";
+    private string tableTitle = "Lista de Contactos:";
 
     public ContactBook(List<Contact> contacts = null!)
     {
@@ -45,6 +46,7 @@ public class ContactBook
         string input;
         do
         {
+            tableTitle = "Lista de Contactos:"; 
             ShowContacts();
 
             bool isInvalid;
@@ -108,7 +110,7 @@ public class ContactBook
         }
 
         Console.WriteLine("================================================================================================");
-        Console.WriteLine("  Lista de Contactos: ");
+        Console.WriteLine($"  {tableTitle} ");
         Console.WriteLine("================================================================================================");
 
         int indexCol = -Math.Max("#".Length, filteredContacts.Count.ToString().Length);
@@ -148,10 +150,10 @@ public class ContactBook
 
     private void ShowInputOptions()
     {
-        Console.WriteLine(string.Format("[{0}] Pagina Siguiente | [{1}] Crear Contacto      | [{2}] Eliminar Contacto | [{3}] Eliminar Duplicados", 
+        Console.WriteLine(string.Format("[{0}] Pagina Siguiente | [{1}] Crear Contacto      | [{2}] Eliminar Contacto | [{3}] Contactos duplicados", 
             NEXT_PAGE, CREATE_CONTACT, DELETE_CONTACT, DEDUPLICATE_CONTACTS));
         
-        Console.WriteLine(string.Format("[{0}] Pagina Anterior  | [{1}] Revisar Contacto    | [{2}] Buscar Contactos  | [{3}] Tamaño de Pagina", 
+        Console.WriteLine(string.Format("[{0}] Pagina Anterior  | [{1}] Revisar Contacto    | [{2}] Buscar Contactos  | [{3}] Tamano de Pagina", 
             PREV_PAGE, REVIEW_CONTACT, FIND_CONTACTS, PAGE_SIZE));
         
         Console.WriteLine(string.Format("[{0}] Ir a Pagina      | [{1}] Actualizar Contacto | [{2}] Ordenar Contactos | [{3}] Salir", 
@@ -229,23 +231,14 @@ public class ContactBook
 
     private void PageSize()
     {
-        PageSize(ref pageSize);
-    }
-
-    private void PageSize(ref int size)
-    {
-        Console.Write("Entre el tamaño de pagina [1-20]: ");
+        Console.Write("Entre el tamano de pagina [1-20]: ");
         string input = Console.ReadLine() ?? "";
 
         if (int.TryParse(input, out int newSize) && newSize >= 1 && newSize <= 20)
         {
-            size = newSize;
-            
-            int pageCount = (int)Math.Max(1, Math.Ceiling(filteredContacts.Count / (double)size));
-            if (currentPage > pageCount)
-            {
-                currentPage = 1;
-            }
+            pageSize = newSize;
+            int pageCount = (int)Math.Max(1, Math.Ceiling(filteredContacts.Count / (double)pageSize));
+            if (currentPage > pageCount) currentPage = 1;
         }
         else
         {
@@ -289,9 +282,7 @@ public class ContactBook
             allContacts.Add(nuevoContacto);
             filteredContacts = allContacts; 
             lastSearchTerm = "";
-
-            int pageCount = (int)Math.Max(1, Math.Ceiling(allContacts.Count / (double)pageSize));
-            currentPage = pageCount;
+            currentPage = (int)Math.Max(1, Math.Ceiling(allContacts.Count / (double)pageSize));
 
             Console.WriteLine("\nContacto creado exitosamente."); 
         }
@@ -324,7 +315,6 @@ public class ContactBook
                 Console.WriteLine("=================================================================================");
                 Console.WriteLine("Revisando Contacto");
                 Console.WriteLine("=================================================================================");
-                Console.WriteLine();
                 ReviewContactAtIndex(index - 1);
                 PressEnterContinue();
                 validIndexChosen = true;
@@ -367,58 +357,27 @@ public class ContactBook
             if (int.TryParse(indexInput, out int index) && index >= 1 && index <= filteredContacts.Count)
             {
                 Console.Clear();
-                int actualIndex = index - 1;
-                Contact c = filteredContacts[actualIndex];
+                Contact c = filteredContacts[index - 1];
 
                 Console.WriteLine("=================================================================================");
                 Console.WriteLine("Actualizar Contacto");
                 Console.WriteLine("=================================================================================");
-                Console.WriteLine();
+                ReviewContactAtIndex(index - 1);
 
-                ReviewContactAtIndex(actualIndex);
+                string newNombre = c.Nombre!, newApellido = c.Apellido!, newTelefono = c.Telefono!, newEmail = c.Email!;
 
-                string newNombre = c.Nombre!;
-                string newApellido = c.Apellido!;
-                string newTelefono = c.Telefono!;
-                string newEmail = c.Email!;
-
-                if (AskToEdit("el nombre"))
-                {
-                    Console.Write("Ingrese el nombre: ");
-                    newNombre = Console.ReadLine() ?? newNombre;
-                }
-
-                if (AskToEdit("el apellido"))
-                {
-                    Console.Write("Ingrese el apellido: ");
-                    newApellido = Console.ReadLine() ?? newApellido;
-                }
-
-                if (AskToEdit("el telefono"))
-                {
-                    Console.Write("Ingrese el telefono: ");
-                    newTelefono = Console.ReadLine() ?? newTelefono;
-                }
-
-                if (AskToEdit("el email"))
-                {
-                    Console.Write("Ingrese el email: ");
-                    newEmail = Console.ReadLine() ?? newEmail;
-                }
+                if (AskToEdit("el nombre")) { Console.Write("Ingrese el nombre: "); newNombre = Console.ReadLine() ?? newNombre; }
+                if (AskToEdit("el apellido")) { Console.Write("Ingrese el apellido: "); newApellido = Console.ReadLine() ?? newApellido; }
+                if (AskToEdit("el telefono")) { Console.Write("Ingrese el telefono: "); newTelefono = Console.ReadLine() ?? newTelefono; }
+                if (AskToEdit("el email")) { Console.Write("Ingrese el email: "); newEmail = Console.ReadLine() ?? newEmail; }
 
                 Console.Write($"¿Desea actualizar este contacto? [Y/N] ");
                 if ((Console.ReadLine()?.ToUpper() ?? "Y") == "Y")
                 {
-                    c.Nombre = newNombre;
-                    c.Apellido = newApellido;
-                    c.Telefono = newTelefono;
-                    c.Email = newEmail;
+                    c.Nombre = newNombre; c.Apellido = newApellido; c.Telefono = newTelefono; c.Email = newEmail;
                     Console.WriteLine("\nOperacion exitosa: Contacto actualizado.");
                 }
-                else
-                {
-                    Console.WriteLine("\nOperacion cancelada.");
-                }
+                else Console.WriteLine("\nOperacion cancelada.");
 
                 PressEnterContinue();
                 validIndexChosen = true;
@@ -456,30 +415,22 @@ public class ContactBook
 
             if (int.TryParse(input, out int index) && index >= 1 && index <= filteredContacts.Count)
             {
-                int actualIndex = index - 1;
-                Contact c = filteredContacts[actualIndex];
-
+                Contact c = filteredContacts[index - 1];
                 Console.Clear();
                 Console.WriteLine("=================================================================================");
                 Console.WriteLine("Eliminar Contacto");
                 Console.WriteLine("=================================================================================");
-                Console.WriteLine();
-                ReviewContactAtIndex(actualIndex);
+                ReviewContactAtIndex(index - 1);
 
                 Console.Write("¿Desea eliminar este contacto? [Y/N] ");
-                string confirm = Console.ReadLine()?.ToUpper() ?? "";
-
-                if (confirm == "Y")
+                if ((Console.ReadLine()?.ToUpper() ?? "") == "Y")
                 {
                     allContacts.Remove(c);
                     filteredContacts = allContacts;
                     lastSearchTerm = "";
                     Console.WriteLine("\nOperacion exitosa: Contacto eliminado.");
                 }
-                else
-                {
-                    Console.WriteLine("\nOperacion cancelada.");
-                }
+                else Console.WriteLine("\nOperacion cancelada.");
 
                 PressEnterContinue();
                 validIndexChosen = true;
@@ -507,14 +458,7 @@ public class ContactBook
         }
 
         Console.Write($"¿Desea realizar la busqueda con el termino '{term}'? (Y/N): ");
-        string confirm = Console.ReadLine()?.ToUpper() ?? "";
-
-        if (confirm != "Y")
-        {
-            Console.WriteLine("Busqueda cancelada.");
-            PressEnterContinue();
-            return;
-        }
+        if ((Console.ReadLine()?.ToUpper() ?? "") != "Y") return;
 
         lastSearchTerm = term;
         filteredContacts = allContacts.Where(c => 
@@ -525,23 +469,16 @@ public class ContactBook
         ).ToList();
 
         currentPage = 1;
-        
         Console.WriteLine("\nBusqueda completada.");
         PressEnterContinue();
     }
 
     private void OrderContacts() 
     { 
-        TipoOrden[] sortTypes = new TipoOrden[]
-        {
-            TipoOrden.Nombre, TipoOrden.Apellido, TipoOrden.Telefono, TipoOrden.Email
-        };
-
-        // Llama a GetInt con la logica de repintado de contactos
-        int index = GetInt("Ordenar contactos por [0] Nombre [1] Apellido [2] Telefono [3] Email [0-3]", 0, 3);
+        TipoOrden[] sortTypes = new TipoOrden[] { TipoOrden.Nombre, TipoOrden.Apellido, TipoOrden.Telefono, TipoOrden.Email };
+        int index = GetInt("Ordenar contactos por [0] Nombre [1] Apellido [2] Telefono [3] Email [0-3]", 0, 3, () => ShowContacts());
 
         ContactComparer ccp = new ContactComparer(sortTypes[index]);
-        
         allContacts.Sort(ccp);
         filteredContacts.Sort(ccp);
 
@@ -549,7 +486,7 @@ public class ContactBook
         PressEnterContinue();
     }
 
-    private int GetInt(string prompt, int min, int max)
+    private int GetInt(string prompt, int min, int max, Action redrawAction)
     {
         int result;
         while (true)
@@ -560,24 +497,134 @@ public class ContactBook
                 return result;
             }
             
-            // Si hay error, avisamos al usuario y esperamos confirmacion
             Console.WriteLine($"\nERROR: Debe ingresar un numero entre {min} y {max}.");
             PressEnterContinue();
-
-            // Limpiamos y VOLVEMOS a dibujar los contactos para que no se pierdan
             Console.Clear();
-            ShowContacts(); 
+            redrawAction();
         }
     }
 
     private void DeduplicateContacts() 
     { 
-        Console.WriteLine("Eliminar Contactos Duplicados"); 
-        PressEnterContinue();
+        Dictionary<int, List<int>> duplicateGroups = ContactMerger.FindDuplicates(allContacts);
+        List<Contact> temp = new List<Contact>();
+        bool foundAny = false;
+
+        foreach (var groupIndexes in duplicateGroups.Values)
+        {
+            List<Contact> group = groupIndexes.ConvertAll(i => allContacts[i]);
+
+            if (group.Count > 1)
+            {
+                foundAny = true;
+                
+                string sNombre = "", sApellido = "", sTelefono = "", sEmail = "";
+
+                Action redrawDuplicates = () => {
+                    Console.Clear();
+                    ShowContactsInList(group, "Lista de Contactos Duplicados encontrados:");
+                    if (!string.IsNullOrEmpty(sNombre)) Console.WriteLine($"Ingrese el indice del nombre [1-{group.Count}] {sNombre}");
+                };
+
+                Console.Clear();
+                ShowContactsInList(group, "Lista de Contactos Duplicados encontrados:");
+                
+                int fnameIndex = GetInt("Ingrese el indice del nombre [1-" + group.Count + "]", 1, group.Count, redrawDuplicates) - 1;
+                sNombre = (fnameIndex + 1).ToString();
+
+                Action redrawWithFname = () => {
+                    redrawDuplicates();
+                    if (!string.IsNullOrEmpty(sApellido)) Console.WriteLine($"Ingrese el indice del apellido [1-{group.Count}] {sApellido}");
+                };
+                
+                int lnameIndex = GetInt("Ingrese el indice del apellido [1-" + group.Count + "]", 1, group.Count, redrawWithFname) - 1;
+                sApellido = (lnameIndex + 1).ToString();
+
+                Action redrawWithLname = () => {
+                    redrawWithFname();
+                    if (!string.IsNullOrEmpty(sTelefono)) Console.WriteLine($"Ingrese el indice del telefono [1-{group.Count}] {sTelefono}");
+                };
+
+                int phoneIndex = GetInt("Ingrese el indice del telefono [1-" + group.Count + "]", 1, group.Count, redrawWithLname) - 1;
+                sTelefono = (phoneIndex + 1).ToString();
+
+                Action redrawWithPhone = () => {
+                    redrawWithLname();
+                    if (!string.IsNullOrEmpty(sEmail)) Console.WriteLine($"Ingrese el indice del email [1-{group.Count}] {sEmail}");
+                };
+
+                int emailIndex = GetInt("Ingrese el indice del email [1-" + group.Count + "]", 1, group.Count, redrawWithPhone) - 1;
+                sEmail = (emailIndex + 1).ToString();
+
+                Contact merged = new Contact {
+                    Nombre = group[fnameIndex].Nombre,
+                    Apellido = group[lnameIndex].Apellido,
+                    Telefono = group[phoneIndex].Telefono,
+                    Email = group[emailIndex].Email
+                };
+
+                Console.Clear();
+                Console.WriteLine("================================================================================================");
+                Console.WriteLine("  Vista previa del contacto fusionado: ");
+                Console.WriteLine("================================================================================================");
+                
+                ShowContactsInList(new List<Contact> { merged }, null!);
+
+                Console.Write("¿Desea fusionar estos contactos? [Y/N] ");
+                if ((Console.ReadLine()?.ToUpper() ?? "N") == "Y")
+                {
+                    temp.Add(merged);
+                    Console.WriteLine("Operacion exitosa: Contactos fusionados.");
+                }
+                else
+                {
+                    temp.AddRange(group);
+                    Console.WriteLine("Operacion cancelada: Contactos no fusionados.");
+                }
+                PressEnterContinue();
+            }
+            else temp.AddRange(group);
+        }
+
+        if (foundAny)
+        {
+            Console.Clear();
+            Console.WriteLine();
+            Console.Write("¿Desea aplicar todas las fusiones a la lista de contactos? [Y/N] ");
+            if ((Console.ReadLine()?.ToUpper() ?? "N") == "Y")
+            {
+                allContacts = filteredContacts = temp;
+                Console.WriteLine("Operacion exitosa: Contactos deduplicados.");
+            }
+            else Console.WriteLine("Operacion cancelada.");
+            PressEnterContinue();
+        }
+        else
+        {
+            Console.WriteLine("\nNo se encontraron contactos duplicados.");
+            PressEnterContinue();
+        }
     }
 
-    private void Exit() 
-    { 
-        Console.WriteLine("Saliendo..."); 
+    private void ShowContactsInList(List<Contact> list, string title)
+    {
+        if (!string.IsNullOrEmpty(title))
+        {
+            Console.WriteLine("================================================================================================");
+            Console.WriteLine($"  {title} ");
+        }
+        
+        Console.WriteLine("================================================================================================");
+        string format = " {0,-3} | {1,-15} | {2,-15} | {3,-15} | {4,-25}";
+        Console.WriteLine(format, "#", "Nombre", "Apellido", "Telefono", "Email");
+        Console.WriteLine(new string('-', 85));
+        for (int i = 0; i < list.Count; i++)
+        {
+            var c = list[i];
+            Console.WriteLine(format, i + 1, c.Nombre, c.Apellido, c.Telefono, c.Email);
+        }
+        Console.WriteLine("================================================================================================");
     }
+
+    private void Exit() { Console.WriteLine("Saliendo..."); }
 }
